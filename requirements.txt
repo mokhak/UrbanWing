@@ -1,5 +1,3 @@
 pymongo
 streamlit
 pillow
-random
-datetime
