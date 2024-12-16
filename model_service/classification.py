@@ -4,6 +4,12 @@ from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from gridfs import GridFS
 
+from transformers import AutoFeatureExtractor, AutoModelForImageClassification
+
+extractor = AutoFeatureExtractor.from_pretrained("chriamue/bird-species-classifier")
+model = AutoModelForImageClassification.from_pretrained("chriamue/bird-species-classifier")
+
+
 app = Flask(__name__)
 
 client = MongoClient("mongodb://localhost:27017")
