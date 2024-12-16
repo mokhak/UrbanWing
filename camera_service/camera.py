@@ -3,11 +3,20 @@ from pymongo import MongoClient
 from gridfs import GridFS
 import datetime
 import uuid
+from dotenv import load_dotenv
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "helloworld"
+jwt = JWTManager(app)
 
-client = MongoClient("mongodb://localhost:27017")
-db = client["image_database"]
+mongo_uri = os.getenv("MONGO_URI")
+client = MongoClient(mongo_uri)
+db = client["auth_database"]
+collection = db["images"]
 grid_fs = GridFS(db)
 
 @app.route("/upload-image", methods=["POST"])

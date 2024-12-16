@@ -1,15 +1,23 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 import bcrypt
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import json
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "helloworld"
+jwt = JWTManager(app)
 
-mongo_uri = "mongodb+srv://mokhak:6u5SGOTuvd0IYKIw@uwcluster.mj1rh.mongodb.net/?retryWrites=true&w=majority&appName=UWCluster"
+mongo_uri = os.getenv("MONGO_URI")
 client = MongoClient(mongo_uri)
 db = client["auth_database"]
 collection = db["users"]
 
-@app.route("/authenticate", methods=["POST"])
+@app.route("/authenticate", methods=["GET"])
 def authenticate():
     data = request.json
     username = data.get("username")
@@ -20,11 +28,16 @@ def authenticate():
     })
     
     if user:
+        print(password)
         if bcrypt.checkpw(password.encode(), user.get("password").encode()):
-            return jsonify({"success": True, 
-                            "firstname": user.get("firstname"),
-                            "role": user.get("role"),
-                            "message": "Auth Successful!"}), 200
+            identity={
+                "firstname": user.get("firstname"),
+                "lastname": user.get("lastname"),
+                "email": user.get("email"),
+                "role": user.get("role")
+            }
+            access_token = create_access_token(identity=json.dumps(identity))
+            return jsonify(access_token=access_token), 200
         else:
             return jsonify({"success": False, "message": "Invalid Credentials!"}), 401
     else:
@@ -69,6 +82,31 @@ def createuser():
                         "role": user_data.get("role")
                         }), 200
     
+@app.route("/getuserinfo", methods=["GET"])
+@jwt_required()
+def getuserinfo():
+    identity = json.loads(get_jwt_identity())
+    
+    return jsonify({
+        "firstname": identity.get("firstname"),
+        "lastname": identity.get("lastname"),
+        "email": identity.get("email"),
+        "role": identity.get("role")
+    }), 200
+    
+@app.route("/getallusers", methods=["GET"])
+@jwt_required()
+def getallusers():
+    identity = json.loads(get_jwt_identity())
+    print(identity)
+    firstname = request.args.get("firstname")
+    print(firstname)
+    
+    if identity.get("firstname") == firstname:
+        results = list(collection.find())
+        return jsonify(results), 200
+    else:
+        return jsonify({"Unauthorized"}), 403       
     
 
 if __name__ == "__main__":

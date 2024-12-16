@@ -2,8 +2,6 @@ import streamlit as st
 import random
 from PIL import Image
 
-
-
 WELCOME_MESSAGES = [
 "🦜🌟 Welcome back, {username}! Ready to spread your wings today? 🐾✨",
 "🐦💬 Chirp, chirp! Great to see you, {username}! The birds are waiting for you. 🌿🌈",
@@ -17,7 +15,7 @@ WELCOME_MESSAGES = [
 "🌟🪹 Greetings, {username}! Every wingbeat tells a story—let's discover them together. 🐦🍀"
 ]
 
-welcome_message = random.choice(WELCOME_MESSAGES).format(username=st.session_state.username)
+welcome_message = random.choice(WELCOME_MESSAGES).format(username=st.session_state.current_user_data["firstname"])
 st.markdown(
     f"""
     <h2 style='text-align: center;'>{welcome_message}</h2>
@@ -28,6 +26,3 @@ st.markdown(
 
 st.divider()
 
-st.write(st.session_state.username)
-st.write(st.session_state.logged_in)
-st.write(st.session_state.role)

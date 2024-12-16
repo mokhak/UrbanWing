@@ -28,13 +28,7 @@ def login_elements():
         
     if sign_in:
         if username and password:
-            response = requests.post(
-                AUTH_SERVICE_URL + "/authenticate", json={"username": username, "password": password}
-            )
-            if response.status_code == 200 and response.json()["success"]:
-                st.session_state.logged_in = True
-                st.session_state.username = response.json()["firstname"]
-                st.session_state.role = response.json()["role"]
+            if login_user(username, password):
                 st.success("Login Successful!")
                 st_lottie("https://lottie.host/071500ca-4d90-467d-95cd-025b6974c4c2/0KgqWnQaN5.json", loop=False)
                 time.sleep(1)
@@ -81,16 +75,34 @@ def signup_elements():
                     st.error("This username is already in use! Please try a different username.")
                 elif response.status_code == 200:
                     st.success("You are registered!")
-                    st.session_state.logged_in = True
-                    st.session_state.username = response.json()["firstname"]
-                    st.session_state.role = response.json()["role"]
+                    login_user(username, password)
                     st_lottie("https://lottie.host/071500ca-4d90-467d-95cd-025b6974c4c2/0KgqWnQaN5.json", loop=False)
                     time.sleep(1)
                     st.rerun()
+                    
             else:
                 st.error("Please make sure both passwords match!")
         else:
             st.error("Please fill out all the fields!")
+            
+            
+def login_user(username, password):
+    response = requests.get(
+        AUTH_SERVICE_URL + "/authenticate", json={"username": username, "password": password}
+    )
+    if response.status_code == 200:
+        st.session_state.logged_in = True
+        st.session_state.access_token = response.json()["access_token"]
+        headers = {"Authorization": f"Bearer {st.session_state.access_token}"}
+        response = requests.get(
+            AUTH_SERVICE_URL + "/getuserinfo", headers=headers
+        )
+        st.session_state.current_user_data = response.json()
+        
+        return True
+    else:
+        return False
+    
         
 if st.session_state.signup_display == False:
     login_elements()

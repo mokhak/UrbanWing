@@ -3,3 +3,4 @@ streamlit
 pillow
 streamlit-lottie
 bcrypt
+flask_jwt_extended
