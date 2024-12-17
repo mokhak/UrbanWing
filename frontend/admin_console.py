@@ -20,7 +20,7 @@ st.title("🦉 Hello Admin!")
 
 st.divider()
 
-st.subheader("📸 Run Camera Service")
+st.header("📸 Run Camera Service")
 
 # Fetch emails on button click
 headers = {"Authorization": f"Bearer {st.session_state.access_token}"}
@@ -88,7 +88,7 @@ def process_data(stats, selected_service=None):
     return df
 
 # Streamlit Dashboard
-st.title("📊 API Usage and Performance Statistics")
+st.header("📊 API Usage and Performance Statistics")
 
 # Fetch usage statistics
 stats = fetch_usage_statistics()
