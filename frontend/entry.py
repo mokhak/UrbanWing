@@ -101,7 +101,7 @@ def login_user(username, password):
         
         return True
     else:
-        st.write(response.json())
+        st.write(response.status_code)
         return False
     
         
