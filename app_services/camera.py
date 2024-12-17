@@ -1,13 +1,14 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient, DESCENDING
 from gridfs import GridFS
-import datetime
 import uuid
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
 import os
 import json
 import requests
+import time
+from datetime import datetime
 ML_SERVICE_URL = "http://localhost:5003"
 
 load_dotenv()
@@ -23,6 +24,28 @@ unsplash_url = os.getenv("UNSPLASH_API_URL")
 client = MongoClient(mongo_uri)
 db = client["auth_database"]
 collection = db["images"]
+stats_collection = db["endpoint_stats"]
+
+@app.before_request
+def start_timer():
+    request.start_time = time.time()  # Record the start time
+
+@app.after_request
+def log_response(response):
+    execution_time = round(time.time() - request.start_time, 3)  # Time in seconds
+    
+    # Log the request details, including execution time
+    stats_collection.insert_one({
+        "service": "camera_service",  # Service name
+        "endpoint": request.endpoint or "unknown",
+        "method": request.method,
+        "status_code": response.status_code,
+        "timestamp": datetime.utcnow(),
+        "request_ip": request.remote_addr,
+        "execution_time": execution_time,  # Log execution time
+        "user_agent": request.headers.get("User-Agent")
+    })
+    return response
 
 @app.route("/upload-image", methods=["POST"])
 @jwt_required()
@@ -40,7 +63,7 @@ def upload_image():
                 "imageid": image_id,
                 "imageurl": image_url,
                 "useremail": data.get("useremail"),
-                "timestamp": datetime.datetime.now(),
+                "timestamp": datetime.now(),
                 "classification_status": False,
                 "classification": None 
             }

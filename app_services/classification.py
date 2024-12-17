@@ -7,6 +7,8 @@ import os
 import json
 import requests
 import random
+import time
+from datetime import datetime
 
 load_dotenv()
 
@@ -21,6 +23,28 @@ unsplash_url = os.getenv("UNSPLASH_API_URL")
 client = MongoClient(mongo_uri)
 db = client["auth_database"]
 collection = db["images"]
+stats_collection = db["endpoint_stats"]
+
+@app.before_request
+def start_timer():
+    request.start_time = time.time()  # Record the start time
+
+@app.after_request
+def log_response(response):
+    execution_time = round(time.time() - request.start_time, 3)  # Time in seconds
+    
+    # Log the request details, including execution time
+    stats_collection.insert_one({
+        "service": "ml_model_service",  # Service name
+        "endpoint": request.endpoint or "unknown",
+        "method": request.method,
+        "status_code": response.status_code,
+        "timestamp": datetime.utcnow(),
+        "request_ip": request.remote_addr,
+        "execution_time": execution_time,  # Log execution time
+        "user_agent": request.headers.get("User-Agent")
+    })
+    return response
 
 # Mock bird predictions
 BIRD_CLASSES = [
