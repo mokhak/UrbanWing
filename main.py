@@ -26,7 +26,7 @@ def logout():
 logout_page = st.Page(logout, title="Logout", icon=":material/logout:")
     
 entry_page = st.Page("frontend/entry.py", title="Log in")
-home_page = st.Page("frontend/home.py", title="Home", icon=":material/dashboard:")
+home_page = st.Page("frontend/home.py", title="Home", icon=":material/home:")
 admin_page = st.Page("frontend/admin_console.py", title="Admin Console")
 
 if st.session_state.logged_in:

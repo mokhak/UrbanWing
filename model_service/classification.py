@@ -1,20 +1,26 @@
-import os
-import random
 from flask import Flask, request, jsonify
-from pymongo import MongoClient
+from pymongo import MongoClient, DESCENDING
 from gridfs import GridFS
+from dotenv import load_dotenv
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+import os
+import json
+import requests
+import random
 
-from transformers import AutoFeatureExtractor, AutoModelForImageClassification
-
-extractor = AutoFeatureExtractor.from_pretrained("chriamue/bird-species-classifier")
-model = AutoModelForImageClassification.from_pretrained("chriamue/bird-species-classifier")
-
+load_dotenv()
 
 app = Flask(__name__)
+app.config["JWT_SECRET_KEY"] = "helloworld"
+jwt = JWTManager(app)
 
-client = MongoClient("mongodb://localhost:27017")
-db = client['image_database']
-grid_fs = GridFS(db)
+mongo_uri = os.getenv("MONGO_URI")
+unsplash_access_key = os.getenv("UNSPLASH_ACCESS_KEY")
+unsplash_url = os.getenv("UNSPLASH_API_URL")
+
+client = MongoClient(mongo_uri)
+db = client["auth_database"]
+collection = db["images"]
 
 # Mock bird predictions
 BIRD_CLASSES = [
@@ -27,38 +33,23 @@ BIRD_CLASSES = [
     "No bird detected"
 ]
 
-@app.route("/classify-image", methods=["POST"])
+@app.route("/classify-image", methods=["GET"])
+@jwt_required()
 def classify_image():
+    identity = json.loads(get_jwt_identity())
     data = request.json
-    image_name = data.get("image_name")
+    image_name = {"imageid": data.get("imageid")}
     
-    try:
-        image_data = grid_fs.find_one({"filename": image_name})
-        if not image_data:
-            return jsonify({"error": "Image not found in the database!"})
-            
+    if identity.get("role") == data.get("role"):
         bird_type = random.choice(BIRD_CLASSES)
-        confidence = round(random.uniform(0.5, 1.0), 2)
-        bird_detected = bird_type != "No bird detected"
-        
-        db.fs.files.update_one(
-            {"filename": image_name},
-            {
-                "$set": {
-                    "bird_detected": bird_detected,
-                    "bird_type": bird_type,
-                    "confidence": confidence
-                }
-            }
-        )
-        
-        return jsonify({
-            "bird_detected": bird_detected,
-            "bird_type": bird_type,
-            "confidence": confidence
-        })
-    except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        insert_data = {
+            "classification_status": True,
+            "classification": bird_type
+        }
+        collection.update_one(image_name, {"$set":insert_data})
+        return jsonify({"success": True}), 200
+    else:
+        return jsonify({"error": "Unauthorized"}), 500
     
 if __name__ == "__main__":
     app.run(debug=True, port=5003)

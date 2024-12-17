@@ -28,7 +28,6 @@ def authenticate():
     })
     
     if user:
-        print(password)
         if bcrypt.checkpw(password.encode(), user.get("password").encode()):
             identity={
                 "firstname": user.get("firstname"),

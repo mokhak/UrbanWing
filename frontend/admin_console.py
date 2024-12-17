@@ -50,8 +50,12 @@ if st.session_state["emails"]:
         if response.status_code == 200:
             st.success("Posted Image on User Account!")
         else:
-            st.error("Unable to post image. Try again!")
+            st.error(f"Unable to post image. Status code: {response}")
 
 else:
     st.warning("No user data available. Click the button above to fetch user data.")
+    
+st.divider()
+
+st.subheader("API Endpoint Statistics")
     
