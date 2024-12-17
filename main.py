@@ -8,14 +8,19 @@ if "access_token" not in st.session_state:
     st.session_state.access_token = None
 if "current_user_data" not in st.session_state:
     st.session_state.current_user_data = None
-if "welcome_message" not in st.session_state:
-    st.session_state.welcome_message = None
+if "emails" not in st.session_state:
+    st.session_state["emails"] = []
+if "user_selection" not in st.session_state:
+    st.session_state["user_selection"] = None
     
 def logout():
     st.session_state.logged_in = False
-    st.session_state.role = None
     st.session_state.signup_display = False
+    st.session_state.access_token = None
     st.session_state.current_user_data = None
+    st.session_state["emails"] = []
+    st.session_state["user_selection"] = None
+    
     st.rerun()
         
 logout_page = st.Page(logout, title="Logout", icon=":material/logout:")

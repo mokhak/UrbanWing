@@ -98,12 +98,10 @@ def getuserinfo():
 @jwt_required()
 def getallusers():
     identity = json.loads(get_jwt_identity())
-    print(identity)
-    firstname = request.args.get("firstname")
-    print(firstname)
+    data = request.json
     
-    if identity.get("firstname") == firstname:
-        results = list(collection.find())
+    if identity.get("role") == data.get("role"):
+        results = list(collection.find({}, {"_id": 0}))
         return jsonify(results), 200
     else:
         return jsonify({"Unauthorized"}), 403       
