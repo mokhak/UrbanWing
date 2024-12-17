@@ -2,5 +2,5 @@
 CAMERA_SERVICE_URL = "http://localhost:5004"
 CLASSIFICATION_SERVICE_URL = "http://localhost:5003/classify-image"
 MONGODB_URL = "mongodb://localhost:27017"
-AUTH_SERVICE_URL = "http://localhost:5005"
+AUTH_SERVICE_URL = "https://auth-service-379302888162.us-central1.run.app"
 ML_SERVICE_URL = "http://localhost:5003"

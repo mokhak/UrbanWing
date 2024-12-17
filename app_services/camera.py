@@ -1,9 +1,8 @@
 from flask import Flask, request, jsonify
 from pymongo import MongoClient, DESCENDING
-from gridfs import GridFS
 import uuid
 from dotenv import load_dotenv
-from flask_jwt_extended import JWTManager, create_access_token, jwt_required, get_jwt_identity
+from flask_jwt_extended import JWTManager, jwt_required, get_jwt_identity
 import os
 import json
 import requests
