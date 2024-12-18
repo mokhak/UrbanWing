@@ -4,3 +4,4 @@ pillow
 streamlit-lottie
 bcrypt
 flask_jwt_extended
+python-dotenv
