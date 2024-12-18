@@ -8,7 +8,7 @@ import json
 import requests
 import time
 from datetime import datetime
-ML_SERVICE_URL = "http://localhost:5003"
+ML_SERVICE_URL = "http://159.89.235.193:5003"
 
 load_dotenv()
 
@@ -106,4 +106,5 @@ def get_latest_visitor():
         return jsonify({"error":"Not authorized!"}), 500
     
 if __name__ == "__main__":
-    app.run(debug=True, port=5004)
+    port = int(os.environ.get("PORT", 5004))
+    app.run(host="0.0.0.0", port=port)

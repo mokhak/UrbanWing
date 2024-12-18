@@ -1,7 +1,0 @@
-flask
-pymongo
-python-dotenv
-flask_jwt_extended
-datetime
-requests
-bcrypt

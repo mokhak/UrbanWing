@@ -1,0 +1,6 @@
+flask
+pymongo
+bcrypt
+flask-jwt-extended
+python-dotenv
+requests

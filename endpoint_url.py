@@ -1,6 +1,5 @@
 # API Endpoints
-CAMERA_SERVICE_URL = "http://localhost:5004"
-CLASSIFICATION_SERVICE_URL = "http://localhost:5003/classify-image"
-MONGODB_URL = "mongodb://localhost:27017"
-AUTH_SERVICE_URL = "https://auth-service-379302888162.us-central1.run.app"
-ML_SERVICE_URL = "http://localhost:5003"
+CAMERA_SERVICE_URL = "http://159.89.235.193:5004"
+CLASSIFICATION_SERVICE_URL = "http://159.89.235.193:5003/classify-image"
+AUTH_SERVICE_URL = "http://159.89.235.193:8080"
+ML_SERVICE_URL = "http://159.89.235.193:5003"
