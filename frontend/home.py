@@ -52,6 +52,9 @@ if response.status_code == 200:
     st.write(f"Species Identification: {classification}")
     resized_image = image.resize((400,400))
     st.image(resized_image, use_container_width=True)
+elif response.status_code == 404:
+    st.subheader("No visitors yet! 🥺")
+    st.warning("Go to the admin console and post a visitor.")
     
 else:
     st.error(response.json["error"])
