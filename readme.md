@@ -43,7 +43,7 @@ random bird classification in the database entry of that image ID.
 
 ### How to use the application
 
-- To use the application, open the [Application URL](mokhak-urbanwing.streamlit.app).
+- To use the application, open the [Application URL](https://mokhak-urbanwing.streamlit.app).
 - Now click on 'Join the nest' to create a new account. Once the new account is
 created, you will be logged in automatically. 
 - You will see that you do not have any visitors initially. Logout of the account.
